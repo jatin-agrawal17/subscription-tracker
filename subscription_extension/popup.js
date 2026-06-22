@@ -1003,10 +1003,12 @@ if (
     dateLine = '<div style="font-size:12px;color:#6b7280;margin-top:4px;">Renewal: <strong>' + formatDate(s.renewal_date) + '</strong></div>';
   }
 
-  var amountLine = '';
-  if (!s.is_trial && s.amount) {
-    amountLine = '<div class="sub-amount">' + formatCurrency(s.amount) + '</div>';
-  }
+if (s.amount) {
+    amountLine =
+        '<div class="sub-amount">' +
+        formatCurrency(s.amount) +
+        '</div>';
+}
 
   return '<div class="sub-card">'
     + '<div class="sub-card-top">'
@@ -1300,7 +1302,7 @@ if (
       service_name:   service_name,
       category:       category,
       is_trial:       is_trial,
-      amount:         is_trial ? null : parseFloat(amount),
+      amount: parseFloat(amount) || 0,
       billing_cycle:  is_trial ? null : billing_cycle,
       renewal_date:   is_trial ? null : renewal_date,
       trial_end_date: is_trial ? trial_end_date : null
@@ -1368,7 +1370,7 @@ if (
       service_name:   service_name,
       category:       category,
       is_trial:       is_trial,
-      amount:         is_trial ? null : parseFloat(amount),
+      amount: parseFloat(amount) || 0,
       billing_cycle:  is_trial ? null : billing_cycle,
       renewal_date:   is_trial ? null : renewal_date,
       trial_end_date: is_trial ? trial_end_date : null
