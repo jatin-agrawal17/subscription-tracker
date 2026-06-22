@@ -274,16 +274,20 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
 #         })
     
 
-
 class DashboardView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    def get(self,request):
+    def get(self, request):
 
         subscriptions = Subscription.objects.filter(
-            User=request.user
+
+            User=request.user,
+
+            is_trial=False
+
         )
+
         monthly_spend = 0
 
         yearly_spend = 0
@@ -344,9 +348,11 @@ class DashboardView(APIView):
 
             User=request.user,
 
+            is_trial=False,
+
             renewal_date__gte=date.today(),
 
-            renewal_date__lte=date.today()+timedelta(days=7)
+            renewal_date__lte=date.today() + timedelta(days=7)
 
         )
 
@@ -358,19 +364,25 @@ class DashboardView(APIView):
 
             trial_end_date__gte=date.today(),
 
-            trial_end_date__lte=date.today()+timedelta(days=7)
+            trial_end_date__lte=date.today() + timedelta(days=7)
 
         )
 
         threshold = (
+
             timezone.now()
+
             -
+
             timedelta(days=30)
+
         )
 
         unused_subscriptions = Subscription.objects.filter(
 
-            User=request.user
+            User=request.user,
+
+            is_trial=False
 
         ).filter(
 
@@ -381,19 +393,78 @@ class DashboardView(APIView):
             Q(last_used__isnull=True)
 
         )
-        
+
         trial_subscriptions = Subscription.objects.filter(
 
             User=request.user,
 
-            is_trial=True).count()
+            is_trial=True
+
+        ).count()
+
         paid_subscriptions = Subscription.objects.filter(
 
             User=request.user,
 
             is_trial=False
 
-            ).count()
+        ).count()
+
+        monthly_savings = 0
+
+        yearly_savings = 0
+
+        for sub in unused_subscriptions:
+
+            if sub.billing_cycle == "Monthly":
+
+                monthly_savings += float(
+                    sub.amount
+                )
+
+                yearly_savings += float(
+                    sub.amount
+                ) * 12
+
+            elif sub.billing_cycle == "Quarterly":
+
+                monthly_savings += float(
+                    sub.amount
+                ) / 3
+
+                yearly_savings += float(
+                    sub.amount
+                ) * 4
+
+            elif sub.billing_cycle == "Half-Yearly":
+
+                monthly_savings += float(
+                    sub.amount
+                ) / 6
+
+                yearly_savings += float(
+                    sub.amount
+                ) * 2
+
+            elif sub.billing_cycle == "Yearly":
+
+                monthly_savings += float(
+                    sub.amount
+                ) / 12
+
+                yearly_savings += float(
+                    sub.amount
+                )
+
+            else:
+
+                monthly_savings += float(
+                    sub.amount
+                )
+
+                yearly_savings += float(
+                    sub.amount
+                ) * 12
 
         return Response({
 
@@ -410,7 +481,9 @@ class DashboardView(APIView):
             ),
 
             "total_subscriptions":
-            subscriptions.count(),
+            Subscription.objects.filter(
+                User=request.user
+            ).count(),
 
             "trial_subscriptions":
             trial_subscriptions,
@@ -422,24 +495,15 @@ class DashboardView(APIView):
             unused_subscriptions.count(),
 
             "monthly_savings":
-            (
-                unused_subscriptions.aggregate(
-                    total=Sum("amount")
-                )["total"]
-                or
-                0
+            round(
+                monthly_savings,
+                2
             ),
 
             "yearly_savings":
-            (
-                (
-                    unused_subscriptions.aggregate(
-                        total=Sum("amount")
-                    )["total"]
-                    or
-                    0
-                )
-                * 12
+            round(
+                yearly_savings,
+                2
             ),
 
             "upcoming_renewals":
