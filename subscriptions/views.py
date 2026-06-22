@@ -284,17 +284,61 @@ class DashboardView(APIView):
         subscriptions = Subscription.objects.filter(
             User=request.user
         )
+        monthly_spend = 0
 
-        monthly_spend = (
+        yearly_spend = 0
 
-            subscriptions.aggregate(
-                total=Sum("amount")
-            )["total"]
+        for sub in subscriptions:
 
-            or
+            if sub.billing_cycle == "Monthly":
 
-            0
-        )
+                monthly_spend += float(
+                    sub.amount
+                )
+
+                yearly_spend += float(
+                    sub.amount
+                ) * 12
+
+            elif sub.billing_cycle == "Quarterly":
+
+                monthly_spend += float(
+                    sub.amount
+                ) / 3
+
+                yearly_spend += float(
+                    sub.amount
+                ) * 4
+
+            elif sub.billing_cycle == "Half-Yearly":
+
+                monthly_spend += float(
+                    sub.amount
+                ) / 6
+
+                yearly_spend += float(
+                    sub.amount
+                ) * 2
+
+            elif sub.billing_cycle == "Yearly":
+
+                monthly_spend += float(
+                    sub.amount
+                ) / 12
+
+                yearly_spend += float(
+                    sub.amount
+                )
+
+            else:
+
+                monthly_spend += float(
+                    sub.amount
+                )
+
+                yearly_spend += float(
+                    sub.amount
+                ) * 12
 
         upcoming_renewals = Subscription.objects.filter(
 
@@ -354,10 +398,16 @@ class DashboardView(APIView):
         return Response({
 
             "monthly_spend":
-            monthly_spend,
+            round(
+                monthly_spend,
+                2
+            ),
 
             "yearly_spend":
-            monthly_spend * 12,
+            round(
+                yearly_spend,
+                2
+            ),
 
             "total_subscriptions":
             subscriptions.count(),

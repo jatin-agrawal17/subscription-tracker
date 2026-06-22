@@ -825,7 +825,7 @@ function logout() {
 
 function loadDashboard() {
   getToken(function (token) {
-    fetch('http://127.0.0.1:8000/api/v1/dashboard/', {
+    fetch('https://subscription-tracker-api-s7b3.onrender.com/api/v1/dashboard/', {
       headers: { 'Authorization': 'Bearer ' + token }
     })
     .then(function (res) {
@@ -889,7 +889,7 @@ function loadSubscriptions() {
   container.innerHTML = '<p class="empty">Loading...</p>';
 
   getToken(function (token) {
-    fetch('http://127.0.0.1:8000/api/v1/subscriptions/', {
+    fetch('https://subscription-tracker-api-s7b3.onrender.com/api/v1/subscriptions/', {
       headers: { 'Authorization': 'Bearer ' + token }
     })
     .then(function (res) {
@@ -1088,7 +1088,7 @@ function confirmDelete() {
   closeDeleteModal();
 
   getToken(function (token) {
-    fetch('http://127.0.0.1:8000/api/v1/subscriptions/' + id + '/', {
+    fetch('https://subscription-tracker-api-s7b3.onrender.com/api/v1/subscriptions/' + id + '/', {
       method: 'DELETE',
       headers: { 'Authorization': 'Bearer ' + token }
     })
@@ -1137,7 +1137,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     setLoading('btn-register', true);
-    fetch('http://127.0.0.1:8000/api/v1/register/', {
+    fetch('https://subscription-tracker-api-s7b3.onrender.com/api/v1/register/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: username, email: email, password: password })
@@ -1194,7 +1194,7 @@ if (r.ok) {
     }
 
     setLoading('btn-login', true);
-    fetch('http://127.0.0.1:8000/api/v1/login/', {
+    fetch('https://subscription-tracker-api-s7b3.onrender.com/api/v1/login/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: username, password: password })
@@ -1309,7 +1309,7 @@ if (
     setLoading('btn-add-subscription', true);
 
     getToken(function (token) {
-      fetch('http://127.0.0.1:8000/api/v1/subscriptions/', {
+      fetch('https://subscription-tracker-api-s7b3.onrender.com/api/v1/subscriptions/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1377,7 +1377,7 @@ if (
     setLoading('btn-save-edit', true);
 
     getToken(function (token) {
-      fetch('http://127.0.0.1:8000/api/v1/subscriptions/' + id + '/', {
+      fetch('https://subscription-tracker-api-s7b3.onrender.com/api/v1/subscriptions/' + id + '/', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -1418,3 +1418,4 @@ if (
   });
 
 });
+

@@ -19,6 +19,6 @@
 
   "host_permissions": [
 
-    "http://127.0.0.1:8000/*"
+    "https://subscription-tracker-api-s7b3.onrender.com/*"
   ]
 }
