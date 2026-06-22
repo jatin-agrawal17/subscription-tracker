@@ -278,7 +278,10 @@ class DashboardView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+
+
     def get(self, request):
+        today = timezone.localdate()
 
         subscriptions = Subscription.objects.filter(
 
@@ -350,9 +353,9 @@ class DashboardView(APIView):
 
             is_trial=False,
 
-            renewal_date__gte=date.today(),
+            renewal_date__gte=today,
 
-            renewal_date__lte=date.today() + timedelta(days=7)
+            renewal_date__lte=today + timedelta(days=7)
 
         )
 
@@ -362,37 +365,37 @@ class DashboardView(APIView):
 
             is_trial=True,
 
-            trial_end_date__gte=date.today(),
+            trial_end_date__gte=today,
 
-            trial_end_date__lte=date.today() + timedelta(days=7)
-
-        )
-
-        threshold = (
-
-            timezone.now()
-
-            -
-
-            timedelta(days=30)
+            trial_end_date__lte=today + timedelta(days=7)
 
         )
 
-        unused_subscriptions = Subscription.objects.filter(
+        # threshold = (
 
-            User=request.user,
+        #     timezone.now()
 
-            is_trial=False
+        #     -
 
-        ).filter(
+        #     timedelta(days=30)
 
-            Q(last_used__lt=threshold)
+        # )
 
-            |
+        # unused_subscriptions = Subscription.objects.filter(
 
-            Q(last_used__isnull=True)
+        #     User=request.user,
 
-        )
+        #     is_trial=False
+
+        # ).filter(
+
+        #     Q(last_used__lt=threshold)
+
+        #     |
+
+        #     Q(last_used__isnull=True)
+
+        # )
 
         trial_subscriptions = Subscription.objects.filter(
 
@@ -410,61 +413,61 @@ class DashboardView(APIView):
 
         ).count()
 
-        monthly_savings = 0
+        # monthly_savings = 0
 
-        yearly_savings = 0
+        # yearly_savings = 0
 
-        for sub in unused_subscriptions:
+        # for sub in unused_subscriptions:
 
-            if sub.billing_cycle == "Monthly":
+        #     if sub.billing_cycle == "Monthly":
 
-                monthly_savings += float(
-                    sub.amount
-                )
+        #         monthly_savings += float(
+        #             sub.amount
+        #         )
 
-                yearly_savings += float(
-                    sub.amount
-                ) * 12
+        #         yearly_savings += float(
+        #             sub.amount
+        #         ) * 12
 
-            elif sub.billing_cycle == "Quarterly":
+        #     elif sub.billing_cycle == "Quarterly":
 
-                monthly_savings += float(
-                    sub.amount
-                ) / 3
+        #         monthly_savings += float(
+        #             sub.amount
+        #         ) / 3
 
-                yearly_savings += float(
-                    sub.amount
-                ) * 4
+        #         yearly_savings += float(
+        #             sub.amount
+        #         ) * 4
 
-            elif sub.billing_cycle == "Half-Yearly":
+        #     elif sub.billing_cycle == "Half-Yearly":
 
-                monthly_savings += float(
-                    sub.amount
-                ) / 6
+        #         monthly_savings += float(
+        #             sub.amount
+        #         ) / 6
 
-                yearly_savings += float(
-                    sub.amount
-                ) * 2
+        #         yearly_savings += float(
+        #             sub.amount
+        #         ) * 2
 
-            elif sub.billing_cycle == "Yearly":
+        #     elif sub.billing_cycle == "Yearly":
 
-                monthly_savings += float(
-                    sub.amount
-                ) / 12
+        #         monthly_savings += float(
+        #             sub.amount
+        #         ) / 12
 
-                yearly_savings += float(
-                    sub.amount
-                )
+        #         yearly_savings += float(
+        #             sub.amount
+        #         )
 
-            else:
+        #     else:
 
-                monthly_savings += float(
-                    sub.amount
-                )
+        #         monthly_savings += float(
+        #             sub.amount
+        #         )
 
-                yearly_savings += float(
-                    sub.amount
-                ) * 12
+        #         yearly_savings += float(
+        #             sub.amount
+        #         ) * 12
 
         return Response({
 
@@ -491,20 +494,20 @@ class DashboardView(APIView):
             "paid_subscriptions":
             paid_subscriptions,
 
-            "unused_subscriptions":
-            unused_subscriptions.count(),
+            # "unused_subscriptions":
+            # unused_subscriptions.count(),
 
-            "monthly_savings":
-            round(
-                monthly_savings,
-                2
-            ),
+            # "monthly_savings":
+            # round(
+            #     monthly_savings,
+            #     2
+            # ),
 
-            "yearly_savings":
-            round(
-                yearly_savings,
-                2
-            ),
+            # "yearly_savings":
+            # round(
+            #     yearly_savings,
+            #     2
+            # ),
 
             "upcoming_renewals":
             UpcomingRenewalSerializer(

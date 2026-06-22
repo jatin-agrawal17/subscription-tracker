@@ -837,10 +837,10 @@ function loadDashboard() {
 
       document.getElementById('monthly_spend').textContent   = formatCurrency(data.monthly_spend);
       document.getElementById('yearly_spend').textContent    = formatCurrency(data.yearly_spend);
-      document.getElementById('monthly_savings').textContent = formatCurrency(data.monthly_savings);
-      document.getElementById('yearly_savings').textContent  = formatCurrency(data.yearly_savings);
+      // document.getElementById('monthly_savings').textContent = formatCurrency(data.monthly_savings);
+      // document.getElementById('yearly_savings').textContent  = formatCurrency(data.yearly_savings);
       document.getElementById('total_subscriptions').textContent  = data.total_subscriptions  || 0;
-      document.getElementById('unused_subscriptions').textContent = data.unused_subscriptions || 0;
+      // document.getElementById('unused_subscriptions').textContent = data.unused_subscriptions || 0;
       document.getElementById('trial_subscriptions').textContent  = data.trial_subscriptions  || 0;
       document.getElementById('paid_subscriptions').textContent = data.paid_subscriptions || 0;
 
