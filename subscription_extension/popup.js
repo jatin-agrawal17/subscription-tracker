@@ -392,6 +392,60 @@ function confirmDelete() {
    MAIN — DOMContentLoaded
 ============================================================ */
 
+
+function checkCurrentTab() {
+
+    chrome.tabs.query(
+        {
+            active: true,
+            currentWindow: true
+        },
+        function (tabs) {
+
+            const url = tabs[0].url || '';
+
+            const box =
+                document.getElementById(
+                    'detected-service-box'
+                );
+
+            const name =
+                document.getElementById(
+                    'detected-service-name'
+                );
+
+            if (url.includes('netflix.com')) {
+
+                box.style.display = 'block';
+                name.textContent = 'Netflix';
+
+            } else if (url.includes('spotify.com')) {
+
+                box.style.display = 'block';
+                name.textContent = 'Spotify';
+
+            } else if (url.includes('canva.com')) {
+
+                box.style.display = 'block';
+                name.textContent = 'Canva';
+
+            } else if (
+                url.includes('chatgpt.com') ||
+                url.includes('openai.com')
+            ) {
+
+                box.style.display = 'block';
+                name.textContent = 'ChatGPT Plus';
+
+            } else {
+
+                box.style.display = 'none';
+            }
+        }
+    );
+}
+
+
 document.addEventListener('DOMContentLoaded', function () {
 
   /* Auto-login check */
@@ -507,7 +561,21 @@ chrome.storage.local.set(
 
   /* ── Nav ── */
   document.getElementById('btn-go-subs').addEventListener('click', function () { showView('subs'); });
-  document.getElementById('btn-go-add').addEventListener('click', function () { resetAddForm(); showView('add'); });
+  // document.getElementById('btn-go-add').addEventListener('click', function () { resetAddForm(); showView('add'); });
+
+  document.getElementById(
+    'btn-go-add'
+).addEventListener(
+    'click',
+    function () {
+
+        resetAddForm();
+
+        checkCurrentTab();
+
+        showView('add');
+    }
+);
   document.getElementById('btn-back-subs').addEventListener('click', function () { showView('dashboard'); });
   document.getElementById('btn-back-add').addEventListener('click', function () { showView('dashboard'); });
   document.getElementById('btn-back-edit').addEventListener('click', function () { showView('subs'); });
@@ -689,6 +757,61 @@ if (
   });
 
   /* ── Delete Modal ── */
+
+  const detectedServices = {
+
+    "Netflix": {
+        category: "Entertainment"
+    },
+
+    "Spotify": {
+        category: "Music"
+    },
+
+    "Canva": {
+        category: "Productivity"
+    },
+
+    "ChatGPT Plus": {
+        category: "AI"
+    }
+};
+
+document.getElementById(
+    'use-detected-service'
+).addEventListener(
+    'click',
+    function () {
+
+        chrome.storage.local.get(
+            ['detected_service'],
+            function (result) {
+
+                if (!result.detected_service) {
+                    return;
+                }
+
+                const service =
+                    result.detected_service;
+
+                document.getElementById(
+                    'service_name'
+                ).value = service;
+
+                const config =
+                    detectedServices[service];
+
+                if (config) {
+
+                    document.getElementById(
+                        'category'
+                    ).value =
+                        config.category;
+                }
+            }
+        );
+    }
+);
   document.getElementById('btn-cancel-delete').addEventListener('click', closeDeleteModal);
   document.getElementById('btn-confirm-delete').addEventListener('click', confirmDelete);
   document.getElementById('modal-overlay').addEventListener('click', function (e) {
