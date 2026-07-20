@@ -458,7 +458,7 @@ async function runReminderCheck() {
             }
         );
 
-    }, index * 2000);
+    }, index * 4000);
     }
 });
 
@@ -488,10 +488,18 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 
-
 chrome.runtime.onStartup.addListener(() => {
 
     scheduleDailyAlarm();
+
+    const now = new Date();
+
+    const currentHour = now.getHours();
+
+    // Don't show missed reminder before 10 AM
+    if (currentHour < 10) {
+        return;
+    }
 
     chrome.storage.local.get(
         ["lastReminderDate"],
@@ -516,7 +524,6 @@ chrome.runtime.onStartup.addListener(() => {
         }
     );
 });
-
 
 
 chrome.alarms.onAlarm.addListener(
